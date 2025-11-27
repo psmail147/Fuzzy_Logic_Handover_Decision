@@ -2,7 +2,7 @@
 
 This project implements a **fuzzy-logic controller** for deciding when to hand over a mobile user from one base station (BS) to another in a simple cellular scenario, using MATLAB and the Fuzzy Logic Toolbox.
 
-The idea is to compare a **traditional threshold rule** (“handover when RSS\_target − RSS\_serving ≥ 3 dB”) with a **fuzzy handover decision** based on:
+The idea is to compare a **traditional threshold rule** (“handover when `RSS_target − RSS_serving ≥ 3 dB`”) with a **fuzzy handover decision** based on:
 
 - the difference in received signal strength (RSS), and  
 - the user’s speed.
@@ -21,7 +21,7 @@ In a cellular network, a mobile device connected to a serving BS should be trans
 - **too early**, this can cause unnecessary handovers and “ping-pong” effects;  
 - **too late**, the user may experience very weak signal and possible call drops.
 
-Most real systems use rules based on RSS, margins and timers. Here, a fuzzy-logic controller outputs a **handover urgency** in \[0, 1], which is then thresholded to decide when to trigger the handover.
+Most real systems use rules based on RSS, margins and timers. Here, a fuzzy-logic controller outputs a **handover urgency** in the range [0, 1], which is then thresholded to decide when to trigger the handover.
 
 ---
 
@@ -45,7 +45,7 @@ For each time step, the received signal strength from each base station is model
 
 - Transmit power: `Ptx = -30 dBm` (arbitrary reference value).  
 - Path-loss exponent: `n = 3.5`.  
-- Log-normal shadowing noise: Gaussian with σ = 2 dB.
+- Log-normal shadowing noise: Gaussian with standard deviation `σ = 2 dB`.
 
 A simple **drop threshold** is set at −100 dBm to indicate very weak signal. This is not a full QoS model, just a rough indicator.
 
@@ -64,23 +64,18 @@ The fuzzy inference system (FIS) is implemented using MATLAB’s `mamfis` object
 
 1. **RSS difference**
 
-   \[
-   x_1 = RSS_\text{target} - RSS_\text{serving}
-   \]
+   `x1 = RSS_target - RSS_serving` (in dB)
 
-   - Domain: \[−20, 20] dB  
+   - Domain: [-20, 20] dB  
    - Membership functions:
-     - *VeryNegative*, *Negative*, *Zero*, *Positive*, *VeryPositive*
-
-   (Triangular and trapezoidal shapes.)
+     - *VeryNegative*, *Negative*, *Zero*, *Positive*, *VeryPositive*  
+       (triangular and trapezoidal shapes)
 
 2. **User speed**
 
-   \[
-   x_2 = \text{speed in km/h}
-   \]
+   `x2 = speed` (in km/h)
 
-   - Domain: \[0, 130] km/h  
+   - Domain: [0, 130] km/h  
    - Membership functions:
      - *Low*, *Medium*, *High*
 
@@ -93,11 +88,12 @@ The input membership functions are illustrated in **Figure 3**.
 
 The FIS has a single output:
 
-- **Handover urgency** \( y \in [0, 1] \)
+- **Handover urgency** `y` in [0, 1]
 
-  - Membership functions: *VeryLow*, *Low*, *Medium*, *High*, *VeryHigh*
+  - Membership functions:
+    - *VeryLow*, *Low*, *Medium*, *High*, *VeryHigh*
 
-See **Figure 4**.
+The output membership functions are shown in **Figure 4**.
 
 ![Output membership functions](figures/fig_mf_output.png)  
 *Figure 4 – Membership functions for the handover urgency output.*
@@ -122,7 +118,7 @@ The FIS uses:
 - Aggregation: `max`  
 - Defuzzification: **centroid**
 
-Because the raw RSS difference can become very large when the user is extremely close to one BS and far from the other, the value passed into the FIS is clipped to the range \[−20, 20] dB. This keeps the inference focused on the region where the decision is actually ambiguous.
+Because the raw RSS difference can become very large when the user is extremely close to one BS and far from the other, the value passed into the FIS is **clipped** to the range [-20, 20] dB. This keeps the inference focused on the region where the decision is actually ambiguous.
 
 ---
 
@@ -132,7 +128,7 @@ Two schemes are compared:
 
 1. **Threshold-based handover**
 
-   - Trigger when \( RSS_\text{target} - RSS_\text{serving} \ge 3 \,\text{dB} \).
+   - Trigger when `RSS_target - RSS_serving ≥ 3 dB`.
 
 2. **Fuzzy handover**
 
@@ -162,12 +158,12 @@ For the default parameters included in the code, the simulation produces:
 From **Figure 1**, the threshold-based scheme hands over earlier (green marker),
 while the fuzzy controller triggers closer to the mid-point between the BSs (red marker).
 
-From **Figure 2**, we can see the evolution of RSS from both base stations. The crisp handover happens soon after BS2 starts to outperform BS1. The fuzzy controller waits until RSS\_target is noticeably stronger relative to RSS\_serving before its urgency crosses the decision threshold.
+From **Figure 2**, we can see the evolution of RSS from both base stations. The crisp handover happens soon after BS2 starts to outperform BS1. The fuzzy controller waits until `RSS_target` is noticeably stronger relative to `RSS_serving` before its urgency crosses the decision threshold.
 
 The relationship between RSS difference and urgency over time is shown in **Figure 5**.
 
 ![RSS difference and fuzzy handover urgency](figures/fig_rssdiff_urgency.png)  
-*Figure 5 – RSS\_target − RSS\_serving (left axis) and fuzzy handover urgency (right axis). The dashed line marks the urgency threshold used for the decision.*
+*Figure 5 – `RSS_target − RSS_serving` (left axis) and fuzzy handover urgency (right axis). The dashed line marks the urgency threshold used for the decision.*
 
 Observations:
 
@@ -179,16 +175,11 @@ Because of the added shadowing noise, both schemes can experience isolated low-R
 
 ---
 
-## 8. References
+## 6. How to Run
 
-1. T. S. Rappaport, *Wireless Communications: Principles and Practice*,  
-   2nd ed., Prentice Hall, 2002.
+1. Open MATLAB and make sure the **Fuzzy Logic Toolbox** is installed.  
+2. Place all `.m` files in a folder and set MATLAB’s current directory to that folder.  
+3. Run:
 
-2. A. Goldsmith, *Wireless Communications*,  
-   Cambridge University Press, 2005.
-
-3. J. G. Proakis and M. Salehi, *Digital Communications*,  
-   5th ed., McGraw–Hill, 2008.  
-   (Chapters on fading channels, path loss, and mobile radio propagation are
-   especially relevant for the RSS and path-loss modelling used here.)
-
+   ```matlab
+   run_fuzzy_handover_sim
