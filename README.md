@@ -175,11 +175,9 @@ Because of the added shadowing noise, both schemes can experience isolated low-R
 
 ---
 
-## 6. How to Run
+## 6. References 
+1. T. S. Rappaport, *Wireless Communications: Principles and Practice*, 2nd ed., Prentice Hall, 2002.
+2. 2. A. Goldsmith, *Wireless Communications*, Cambridge University Press, 2005.
+3. J. G. Proakis and M. Salehi, *Digital Communications*, 5th ed., McGraw–Hill, 2008. (Chapters on fading channels, path loss, and mobile radio propagation.)
 
-1. Open MATLAB and make sure the **Fuzzy Logic Toolbox** is installed.  
-2. Place all `.m` files in a folder and set MATLAB’s current directory to that folder.  
-3. Run:
 
-   ```matlab
-   run_fuzzy_handover_sim
