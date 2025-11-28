@@ -1,8 +1,8 @@
 # Fuzzy-Logic-Based Handover Decision in a Cellular Network
 
-This project implements a **fuzzy-logic controller** for deciding when to hand over a mobile user from one base station (BS) to another in a simple cellular scenario, using MATLAB and the Fuzzy Logic Toolbox.
+This project implements a fuzzy-logic controller for deciding when to hand over a mobile user from one base station (BS) to another in a simple cellular scenario, using MATLAB and the Fuzzy Logic Toolbox.
 
-The idea is to compare a **traditional threshold rule** (“handover when `RSS_target − RSS_serving ≥ 3 dB`”) with a **fuzzy handover decision** based on:
+The idea is to compare a traditional threshold rule (“handover when `RSS_target − RSS_serving ≥ 3 dB`”) with a fuzzy handover decision based on:
 
 - the difference in received signal strength (RSS), and  
 - the user’s speed.
@@ -18,10 +18,10 @@ All simulation code and plotting is contained in two files:
 
 In a cellular network, a mobile device connected to a serving BS should be transferred to a neighbouring BS when that neighbour provides a better signal. If the handover is:
 
-- **too early**, this can cause unnecessary handovers and “ping-pong” effects;  
-- **too late**, the user may experience very weak signal and possible call drops.
+- too early, this can cause unnecessary handovers and “ping-pong” effects;  
+- too late, the user may experience very weak signal and possible call drops.
 
-Most real systems use rules based on RSS, margins and timers. Here, a fuzzy-logic controller outputs a **handover urgency** in the range [0, 1], which is then thresholded to decide when to trigger the handover.
+Most real systems use rules based on RSS, margins and timers. Here, a fuzzy-logic controller outputs a handover urgency in the range [0, 1], which is then thresholded to decide when to trigger the handover.
 
 ---
 
@@ -29,12 +29,12 @@ Most real systems use rules based on RSS, margins and timers. Here, a fuzzy-logi
 
 ### Geometry and mobility
 
-- Two base stations on a line, separated by **D = 1000 m**.  
+- Two base stations on a line, separated by D = 1000 m.  
 - The user starts close to BS1 and moves towards BS2 with constant speed:
   - `v = 20 m/s` (≈ 72 km/h).
 - Simulation time step: `dt = 0.1 s`.
 
-The resulting trajectory is shown in **Figure 1**.
+The resulting trajectory is shown in Figure 1.
 
 ![User trajectory between base stations](figures/fig_position.png)  
 *Figure 1 – User position vs time. The green marker shows the threshold-based handover location; the red circle shows the fuzzy handover location.*
@@ -47,9 +47,9 @@ For each time step, the received signal strength from each base station is model
 - Path-loss exponent: `n = 3.5`.  
 - Log-normal shadowing noise: Gaussian with standard deviation `σ = 2 dB`.
 
-A simple **drop threshold** is set at −100 dBm to indicate very weak signal. This is not a full QoS model, just a rough indicator.
+A simple drop threshold is set at −100 dBm to indicate very weak signal. This is not a full QoS model, just a rough indicator.
 
-The RSS time series are shown in **Figure 2**.
+The RSS time series are shown in Figure 2.
 
 ![Received signal strength vs time](figures/fig_rss_vs_time.png)  
 *Figure 2 – RSS from BS1 (serving) and BS2 (target). Vertical lines mark the handover times for the two schemes. The red dashed line is the drop threshold.*
@@ -62,7 +62,7 @@ The fuzzy inference system (FIS) is implemented using MATLAB’s `mamfis` object
 
 ### Inputs
 
-1. **RSS difference**
+1. RSS difference
 
    `x1 = RSS_target - RSS_serving` (in dB)
 
@@ -71,7 +71,7 @@ The fuzzy inference system (FIS) is implemented using MATLAB’s `mamfis` object
      - *VeryNegative*, *Negative*, *Zero*, *Positive*, *VeryPositive*  
        (triangular and trapezoidal shapes)
 
-2. **User speed**
+2. User speed
 
    `x2 = speed` (in km/h)
 
@@ -79,7 +79,7 @@ The fuzzy inference system (FIS) is implemented using MATLAB’s `mamfis` object
    - Membership functions:
      - *Low*, *Medium*, *High*
 
-The input membership functions are illustrated in **Figure 3**.
+The input membership functions are illustrated in Figure 3.
 
 ![Input membership functions](figures/fig_mf_inputs.png)  
 *Figure 3 – Membership functions for RSS difference and speed.*
@@ -88,12 +88,12 @@ The input membership functions are illustrated in **Figure 3**.
 
 The FIS has a single output:
 
-- **Handover urgency** `y` in [0, 1]
+- Handover urgency `y` in [0, 1]
 
   - Membership functions:
     - *VeryLow*, *Low*, *Medium*, *High*, *VeryHigh*
 
-The output membership functions are shown in **Figure 4**.
+The output membership functions are shown in Figure 4.
 
 ![Output membership functions](figures/fig_mf_output.png)  
 *Figure 4 – Membership functions for the handover urgency output.*
@@ -116,9 +116,9 @@ The FIS uses:
 - OR: `max`  
 - Implication: `min`  
 - Aggregation: `max`  
-- Defuzzification: **centroid**
+- Defuzzification: centroid
 
-Because the raw RSS difference can become very large when the user is extremely close to one BS and far from the other, the value passed into the FIS is **clipped** to the range [-20, 20] dB. This keeps the inference focused on the region where the decision is actually ambiguous.
+Because the raw RSS difference can become very large when the user is extremely close to one BS and far from the other, the value passed into the FIS is clipped to the range [-20, 20] dB. This keeps the inference focused on the region where the decision is actually ambiguous.
 
 ---
 
@@ -126,14 +126,14 @@ Because the raw RSS difference can become very large when the user is extremely 
 
 Two schemes are compared:
 
-1. **Threshold-based handover**
+1. Threshold-based handover
 
    - Trigger when `RSS_target - RSS_serving ≥ 3 dB`.
 
-2. **Fuzzy handover**
+2. Fuzzy handover
 
    - Evaluate the FIS at each time step.  
-   - Trigger when **urgency ≥ 0.6**.
+   - Trigger when urgency ≥ 0.6.
 
 In addition, a simple “drop” check is used:
 
@@ -149,18 +149,18 @@ This metric is intentionally simple and just serves to compare the two schemes q
 
 For the default parameters included in the code, the simulation produces:
 
-- **User speed:** 72 km/h  
-- **Threshold scheme:**
+- User speed: 72 km/h  
+- Threshold scheme:
   - Handover at approximately `t ≈ 22.4 s`, `x ≈ 448 m`  
-- **Fuzzy scheme:**
+- Fuzzy scheme:
   - Handover at approximately `t ≈ 27.4 s`, `x ≈ 548 m`
 
-From **Figure 1**, the threshold-based scheme hands over earlier (green marker),
+From Figure 1, the threshold-based scheme hands over earlier (green marker),
 while the fuzzy controller triggers closer to the mid-point between the BSs (red marker).
 
-From **Figure 2**, we can see the evolution of RSS from both base stations. The crisp handover happens soon after BS2 starts to outperform BS1. The fuzzy controller waits until `RSS_target` is noticeably stronger relative to `RSS_serving` before its urgency crosses the decision threshold.
+From Figure 2, we can see the evolution of RSS from both base stations. The crisp handover happens soon after BS2 starts to outperform BS1. The fuzzy controller waits until `RSS_target` is noticeably stronger relative to `RSS_serving` before its urgency crosses the decision threshold.
 
-The relationship between RSS difference and urgency over time is shown in **Figure 5**.
+The relationship between RSS difference and urgency over time is shown in Figure 5.
 
 ![RSS difference and fuzzy handover urgency](figures/fig_rssdiff_urgency.png)  
 *Figure 5 – `RSS_target − RSS_serving` (left axis) and fuzzy handover urgency (right axis). The dashed line marks the urgency threshold used for the decision.*
@@ -179,5 +179,3 @@ Because of the added shadowing noise, both schemes can experience isolated low-R
 1. T. S. Rappaport, *Wireless Communications: Principles and Practice*, 2nd ed., Prentice Hall, 2002.
 2. 2. A. Goldsmith, *Wireless Communications*, Cambridge University Press, 2005.
 3. J. G. Proakis and M. Salehi, *Digital Communications*, 5th ed., McGraw–Hill, 2008. (Chapters on fading channels, path loss, and mobile radio propagation.)
-
-
